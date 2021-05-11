@@ -8,10 +8,10 @@ import {
   MDBNavbarToggler,
   MDBIcon
 } from 'mdb-react-ui-kit';
-import { FaHome, FaSignInAlt, FaRegistered } from 'react-icons/fa'
+import { FaHome, FaUser, FaSignOutAlt } from 'react-icons/fa'
 
 
-export default function navbar() {
+export default function authentNavbar() {
   return (
     <div>
       <MDBNavbar expand='sm' light bgColor='white' className="mb-2 py-0">
@@ -31,21 +31,21 @@ export default function navbar() {
               <MDBNavbarItem active>
               </MDBNavbarItem>
               <MDBNavbarItem active>
-                <MDBNavbarLink className="py-0 my-0" aria-current='page' href='/' style={{ color: "black", fontSize: "1.5vw" }}>
+                <MDBNavbarLink className="py-0 my-0" aria-current='page' href='/dashboard' style={{ color: "black", fontSize: "1.5vw" }}>
                   Home
                 </MDBNavbarLink>
               </MDBNavbarItem>
             </MDBNavbarNav>
 
-            <a href="/login">
-              <FaSignInAlt className="py-0 my-0 " style={{ color: "black", fontSize: "1.5vw" }} />
+            <a href="/users/profile">
+              <FaUser className="py-0 my-0 " style={{ color: "black", fontSize: "1.5vw" }} />
             </a>
-            <MDBNavbarLink className="py-0 my-0" href='/login' style={{ color: "black", fontSize: "1.5vw" }}>Login</MDBNavbarLink>
+            <MDBNavbarLink className="py-0 my-0" href='/users/profile' style={{ color: "black", fontSize: "1.5vw" }}>Profile</MDBNavbarLink>
 
-            <a href="/register">
-              <FaRegistered className="py-0 my-0 " style={{ color: "black", fontSize: "1.5vw" }} />
+            <a href="/logout">
+              <FaSignOutAlt className="py-0 my-0 " style={{ color: "black", fontSize: "1.5vw" }} />
             </a>
-            <MDBNavbarLink className="py-0 my-0" href='/register' style={{ color: "black", fontSize: "1.5vw" }}>Register</MDBNavbarLink>
+            <MDBNavbarLink className="py-0 my-0" href='/logout' style={{ color: "black", fontSize: "1.5vw" }}>Logout</MDBNavbarLink>
           </div>
         </MDBContainer>
       </MDBNavbar>

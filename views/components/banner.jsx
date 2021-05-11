@@ -12,7 +12,7 @@ import Navbar from './navbar'
 
 export default function banner() {
   return (
-    <header className="mb-5">
+    <header className="">
       <Navbar />
       <div
         className='p-5 text-center bg-image'

@@ -4,6 +4,7 @@ var path = require("path")
 var cookieParser = require("cookie-parser")
 var logger = require("morgan")
 var session = require("express-session")
+
 // This should refer to the local React and gets installed via `npm install` in
 // the example.
 var reactViews = require('express-react-views');

@@ -12,8 +12,8 @@ function Layout(props) {
         {/*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />*/}
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossOrigin="anonymous"></link>
       </head>
-      <body style={{backgroundColor: '#131313'}}>
-        <div style={{backgroundColor: "white"}}>
+      <body style={{backgroundColor: 'white'}}>
+        <div style={{backgroundColor: "#131313"}}>
           {props.children}
           </div>
       </body>

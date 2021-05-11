@@ -6,7 +6,7 @@ function Message(props) {
       <ul>
       {
         props.messages.map(m => (
-          <li>{m.msg}</li>
+          <li className="text-center list-unstyled mt-2" style={{color: "red"}}>{m.msg}</li>
         ))
       }
       </ul>

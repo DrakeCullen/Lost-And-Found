@@ -8,6 +8,10 @@
 
 <br>
 
+### The gifs below may take a minute to load in. They can also be found at: https://github.com/DrakeCullen/Lost-And-Found/tree/main/imgs
+
+<br>
+
 ### Here you see the home page that is displayed when a user isn't logged in. If they try to view a post, they will be asked to login or register a new account.
 
 <br/>

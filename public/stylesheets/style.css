@@ -9,3 +9,7 @@ body {
   width: 80%;
   position: relative;
 }
+
+.card-style {
+  max-width: 30%;
+}

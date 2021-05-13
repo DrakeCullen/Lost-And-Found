@@ -8,7 +8,7 @@ import {
   MDBNavbarToggler,
   MDBIcon
 } from 'mdb-react-ui-kit';
-import { FaHome, FaUser, FaSignOutAlt } from 'react-icons/fa'
+import { FaHome, FaUser, FaSignOutAlt, FaPost } from 'react-icons/fa'
 
 
 export default function authentNavbar() {
@@ -35,7 +35,23 @@ export default function authentNavbar() {
                   Home
                 </MDBNavbarLink>
               </MDBNavbarItem>
+              <MDBNavbarItem active>
+                <MDBNavbarLink className="py-0 my-0" aria-current='page' href='/post' style={{ color: "black", fontSize: "1.5vw" }}>
+                |  New Post
+                </MDBNavbarLink>
+              </MDBNavbarItem>
+              <MDBNavbarItem active>
+                <MDBNavbarLink className="py-0 my-0" aria-current='page' href='/userPosts' style={{ color: "black", fontSize: "1.5vw" }}>
+                |  Edit Posts
+                </MDBNavbarLink>
+              </MDBNavbarItem>
+              <MDBNavbarItem active>
+                <MDBNavbarLink className="py-0 my-0" aria-current='page' href='/deletePost' style={{ color: "black", fontSize: "1.5vw" }}>
+                |  Delete Posts
+                </MDBNavbarLink>
+              </MDBNavbarItem>
             </MDBNavbarNav>
+            
 
             <a href="/users/profile">
               <FaUser className="py-0 my-0 " style={{ color: "black", fontSize: "1.5vw" }} />

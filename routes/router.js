@@ -1,13 +1,29 @@
 var express = require("express")
 var router = express.Router()
 var bcrypt = require("bcryptjs")
+var fs = require('fs');
+var path = require('path');
+require('dotenv/config');
 
 const { check, validationResult } = require('express-validator/check')
 const { sanitizeBody } = require("express-validator/filter")
 
+var multer = require('multer');
+ 
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '-' + Date.now())
+    }
+});
+ 
+var upload = multer({ storage: storage });
+
 // import models
 var User = require("../models/user")
-var Course = require("../models/course")
+var Post = require("../models/posts")
 const { MongoError } = require("mongodb")
 
 let title = "Lost and Found"
@@ -20,19 +36,33 @@ function userLoggedIn(req, res) {
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
-  res.render("index", { title: title })
+  Post.find({}, (err, posts) => {
+    if (err) throw err;
+    res.render("index", {
+      title: "Home",
+      posts: posts,
+      user: "None",
+      errors: []
+    })
+  });
+
 })
 
 // authenticated page; check if session exists
-router.get("/dashboard", (req, res, next) => {
+router.get("/dashboard/:id?", (req, res, next) => {
   let user = userLoggedIn(req, res)
+  Post.find({post_id : {$ne : user._id}}, (err, posts) => {
+    if (err) throw err;
     res.render("dashboard", {
-      title: "Gradebook Dashboard",
+      title: "Dashboard",
+      posts: posts,
       user: user,
-  })
+      errors: []
+    })
+  });
 })
 
-router.get("/login", function (req, res, next) {
+router.get("/login/:id?", function (req, res, next) {
   res.render("login", { title: "Log in" }) // pug template
 })
 
@@ -89,7 +119,7 @@ router.post(
     check("email", "Not a valid email.")
       .trim()
       .isEmail(),
-    check("password", "Password must be at leat 5 chars long")
+    check("password", "Password must be at least 5 characters long")
       .trim()
       .isLength({ min: 5 }),
     check("password1", "Two passwords do not match")
@@ -156,7 +186,6 @@ router.get("/profile", function (req, res, next) {
 })
 
 router.post("/profile", function (req, res, next) {
-  // Is a user logged in?
   var user = userLoggedIn(req, res)
   var condition = { _id: user._id }
   var update = {
@@ -184,12 +213,13 @@ router.post("/profile", function (req, res, next) {
 router.get("/courses", function (req, res, next) {
   // get logged in user
   let user = userLoggedIn(req, res)
-  Course.find({user_id: user._id}, (err, courses) => {
+  Post.find({}, (err, posts) => {
     if (err) throw err;
-    //console.log(courses)
+    console.log(posts)
     res.render("courses", {
-      title: "All courses",
-      courses: courses,
+      title: "Home",
+      posts: posts,
+      user: user,
       errors: []
     })
   });
@@ -197,23 +227,31 @@ router.get("/courses", function (req, res, next) {
 
 // Individual course page...
 // *? optional request parameter
-router.get("/course/:id?", function (req, res, next) {
+router.get("/post/:id?", function (req, res, next) {
   // get logged in user
+  
   var user = userLoggedIn(req, res)
-  var courseID = req.params.id
-  if (courseID) {
-    console.log(`courseID: ${courseID}`)
-    var course = Course.findOne({ _id: courseID }, function (err, course) {
-      res.render("./components/course", {
-        title: "Update existing course",
-        course: course,
+  var postID = req.params.id
+  if (postID) {
+      Post.findOne({ _id: postID }, function (err, post) {
+      if (err) {  
+          res.render("dashboard", {
+            title: "Home",
+            post: post,
+            user: user,
+            errors: []
+          })
+      }
+      res.render("./components/post", {
+        title: "Update Your Post",
+        post: post,
         errors: []
       })
     })
   } else {
-    res.render("./components/course", {
-      title: "Add a new course",
-      course: null,
+    res.render("./components/post", {
+      title: "Create a New Post",
+      post: { title: '', description: '', contact: '', img: ''},
       errors: []
     })
   }
@@ -222,23 +260,18 @@ router.get("/course/:id?", function (req, res, next) {
 // either add new or update existing course
 // optional course_id
 router.post(
-  "/course/:id?",
+  "/post/:id?",
   [
     // Validate fields.
-    check("name", "Short name must not be empty.")
+    check("title", "Title name must not be empty.")
       .trim()
       .isLength({ min: 1 }),
-    check("fullName", "Full name must not be empty.")
+    check("description", "Description must not be empty.")
       .trim()
       .isLength({ min: 1 }),
-    check("crn", "CRN must not be empty.")
+    check("contact", "Contact must not be empty.")
       .trim()
       .isLength({ min: 1 }),
-    // email must be valid
-    check("section", "Section must not be empty.")
-      .isLength({ min: 1 })
-      .trim(),
-    // Sanitize fields.
     sanitizeBody("*")
       .trim()
       .escape()
@@ -251,46 +284,51 @@ router.post(
     // check if there are errors
     if (!errors.isEmpty()) {
       let context = {
-        title: "Add a new course",
+        title: "Create a new post",
         errors: errors.array()
       }
       res.render("./components/course", context)
     } else {
+      
       // create a user document and insert into mongodb collection
-      let course = {
-        name: req.body.name,
-        fullName: req.body.fullName,
-        crn: req.body.crn,
-        section: req.body.section,
-        user_id: user._id
+      let post = {
+        title: req.body.title,
+        description: req.body.description,
+        contact: req.body.contact,
+        img: req.body.img,
+        post_id: user._id
       }
       // check if data is there on console
-      console.log(course)
+      console.log(post)
       // check if the form data is for update or new course
-      var id = req.params.id
+      let id = req.params.id
       if (id) {
-        // update
-        updateCourse(res, id, course)
+        console.log("update")
+        updateCourse(res, id, post)
         let context = {
           title: "Update course",
           errors: [{msg: "Course updated successfully!"}],
-          course: course
+          post: post
         }
-        res.render("./components/course", context)
+        res.render("./components/post", { 
+        title: "Update Succesful!",
+        post: post,
+        errors: []})
       }
       // add new course
       else {
-        addCourse(res, course).then((errors) => {
+        console.log("create")
+        addPost(res, post).then((errors) => {
           console.log('Errors: ', errors)
           if (errors && errors.length !== 0) {
             let context = {
-              title: "Add a new course",
+              title: "Create a new post",
               errors: errors
             }
-            res.render("./components/course", context)
+            res.render("./components/post", context)
           }
           else {
-            res.redirect("/courses")
+            res.redirect("/dashboard")
           }
         })
       }
@@ -304,7 +342,7 @@ function updateCourse(res, id, course) {
   var condition = { _id: id }
   var option = {}
   var update = {}
-  Course.updateOne(condition, course, option, (err, rowsAffected) => {
+  Post.updateOne(condition, course, option, (err, rowsAffected) => {
     if (err) {
       console.log(`caught the error: ${err}`)
       return res.status(500).json(err);
@@ -312,8 +350,8 @@ function updateCourse(res, id, course) {
   })
 }
 
-async function addCourse(res, course) {
-  var c = new Course(course)
+async function addPost(res, post) {
+  var c = new Post(post)
   try {
     await c.save();
   }
@@ -329,25 +367,74 @@ async function addCourse(res, course) {
 }
 
 // either add new or update existing course
-router.post("/deletecourse", function (req, res, next) {
+router.post("/deletePost/:id?", function (req, res, next) {
   // create a user document and insert into mongodb collection
-  console.log(req.body)
-  let query = {
-    id: req.body.courseID
-  }
-  // check if data is there on console
-  console.log(query)
-  Course.deleteOne(query, function (err) {
+  var postID = req.params.id
+  console.log(postID);
+  Post.deleteOne({_id: postID}, function (err) {
     if (err) throw err
     else {
-      console.log(`Deleted course id: ${query}`)
-      res.redirect("/grade")
+      console.log(`Deleted course id: ${postID}`)
+      res.redirect("/dashboard")
     }
   })
 })
 
-router.get("/addstudent", function (req, res, next) {
-  res.send("FIXME...")
+
+
+router.get("/userPosts/:id?", (req, res, next) => {
+  let user = userLoggedIn(req, res)
+  Post.find({post_id : user._id}, (err, posts) => {
+    if (err) throw err;
+    res.render("userPosts", {
+      title: "Here are your posts:",
+      posts: posts,
+      user: user,
+      errors: []
+    })
+  });
+})
+
+router.get("/deletePost/:id?", (req, res, next) => {
+  let user = userLoggedIn(req, res)
+  Post.find({post_id : user._id}, (err, posts) => {
+    if (err) throw err;
+    res.render("deletePost", {
+      title: "Here are your posts:",
+      posts: posts,
+      user: user,
+      errors: []
+    })
+  });
+})
+
+router.get("/otherUser/:id?", function (req, res, next) {  
+  var user = userLoggedIn(req, res)
+  var postID = req.params.id
+  if (postID) {
+    Post.findOne({ _id: postID }, function (err, posts) {
+      if (err) {  
+          res.render("dashboard", {
+            title: "Home",
+            posts: posts,
+            user: user,
+            errors: []
+          })
+      }
+      res.render("otherUser", {
+        title: `Help find their lost item!`,
+        posts: posts,
+        errors: []
+      })
+    })
+  } else {
+    res.render("dashboard", {
+      title: "Dashboard",
+      posts: posts,
+      user: user,
+      errors: []
+    })
+  }
 })
 
 module.exports = router

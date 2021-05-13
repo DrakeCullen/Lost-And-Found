@@ -4,7 +4,7 @@ import Layout from './layout'
 
 function CoursesTable(props) {
   return (
-    <table>
+    <table >
       <tbody>
         <thead>
           <td>Name</td><td>Full name</td><td>CRN</td><td>Section</td>

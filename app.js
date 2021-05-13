@@ -4,11 +4,26 @@ var path = require("path")
 var cookieParser = require("cookie-parser")
 var logger = require("morgan")
 var session = require("express-session")
+var fs = require('fs');
+var path = require('path');
+require('dotenv/config');
 
 // This should refer to the local React and gets installed via `npm install` in
 // the example.
 var reactViews = require('express-react-views');
 
+var multer = require('multer');
+ 
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads')
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + '-' + Date.now())
+    }
+});
+ 
+var upload = multer({ storage: storage });
 // Set up mongoose connection
 var mongoose = require("mongoose");
 mongoose.set('useNewUrlParser', true);
@@ -41,7 +56,6 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 // handles server side sessions
 app.use(session({ 
-    // FIXME - change your secret to some long random string
     secret: "B1ZIwibv0LxR%g*0AeH!NzjtF48fng6CNq7qcX", 
     resave: true,
     name: 'SESSION_ID',
@@ -67,5 +81,22 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500)
     res.render("error", {title: "Error"})
 })
+
+app.use((req, res, next) => {
+    const render = res.render;
+    const send = res.send;
+    res.render = function renderWrapper(...args) {
+        Error.captureStackTrace(this);
+        return render.apply(this, args);
+    };
+    res.send = function sendWrapper(...args) {
+        try {
+            send.apply(this, args);
+        } catch (err) {
+            console.error(`Error in res.send | ${err.code} | ${err.message} | ${res.stack}`);
+        }
+    };
+    next();
+});
 
 module.exports = app

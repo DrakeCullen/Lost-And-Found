@@ -8,6 +8,7 @@ function footer() {
         <MDBFooter style={{ backgroundColor: "#1561F0", color: "white" }} className="font-small pt-4 mt-4">
             <MDBContainer fluid className="text-center text-md-left">
                 <MDBRow>
+                <MDBCol md="3"> </MDBCol>
                     <MDBCol md="6">
                         <h5 className="title">Thank you for checking out the website!</h5>
                         <p>
@@ -20,23 +21,7 @@ function footer() {
                         <FaYoutube className="mx-2" />
                         </div>
                     </MDBCol>
-                    <MDBCol md="6">
-                    <h5 className="title">Links:</h5>
-                        <ul>
-                            <li className="list-unstyled">
-                                <a href="/" style={{ color: "white" }}>Home</a>
-                            </li>
-                            <li className="list-unstyled">
-                                <a href="/login" style={{ color: "white" }}>Login</a>
-                            </li>
-                            <li className="list-unstyled">
-                                <a href="#!" style={{ color: "white" }}>Link 3</a>
-                            </li>
-                            <li className="list-unstyled">
-                                <a href="#!" style={{ color: "white" }}>Link 4</a>
-                            </li>
-                        </ul>
-                    </MDBCol>
+                  
                 </MDBRow>
             </MDBContainer>
             <div className='mask' style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>

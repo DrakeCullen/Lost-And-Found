@@ -17,7 +17,7 @@ function Login(props) {
           <Form style={{ width: '300px' }} method="POST" action="/login">
             <Form.Group>
               <Form.Label >Email</Form.Label>
-              <Form.Control type='text' required placeholder="hello@gmail.com" name="email"/>
+              <Form.Control type='text' required placeholder="hello@gmail.com" name="email" value={(props.email) ? props.email : null}/>
             </Form.Group>
             <Form.Group>
               <Form.Label className="mt-3">Password</Form.Label>

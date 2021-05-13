@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('gradebook:server');
+var debug = require('debug')('lostnfound:server');
 var http = require('http');
 
 /**

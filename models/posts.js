@@ -11,5 +11,4 @@ var PostSchema = new Schema({
     img:     { type: String, required: true, max: 90 }
 })
 
-// Export model
 module.exports = mongoose.model("Post", PostSchema, "posts")

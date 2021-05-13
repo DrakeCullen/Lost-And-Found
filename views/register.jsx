@@ -17,23 +17,23 @@ function Register(props) {
           <Form style={{ width: '300px' }} method="POST" action="/register">
             <Form.Group>
               <Form.Label >First Name</Form.Label>
-              <Form.Control type='text' name="firstName" required placeholder="First Name"/>
+              <Form.Control type='text' name="firstName" required placeholder="First Name" value={(props.firstName) ? props.firstName : null} />
             </Form.Group>
             <Form.Group>
               <Form.Label className="mt-3">Last Name</Form.Label>
-              <Form.Control type='text' name="lastName" required placeholder="Last Name"/>
+              <Form.Control type='text' name="lastName" required placeholder="Last Name" value={(props.lastName) ? props.lastName : null}/>
             </Form.Group>
             <Form.Group>
               <Form.Label className="mt-3">Email</Form.Label>
-              <Form.Control type='text' name="email" required placeholder="Email"/>
+              <Form.Control type='text' name="email" required placeholder="Email" value={(props.email) ? props.email : null}/>
             </Form.Group>
             <Form.Group>
               <Form.Label className="mt-3">Password</Form.Label>
-              <Form.Control type="password" name="password" required placeholder="**********" />
+              <Form.Control type="password" name="password" required placeholder="**********" value={(props.password) ? props.password : null}/>
             </Form.Group>
             <Form.Group>
               <Form.Label className="mt-3">Password</Form.Label>
-              <Form.Control type="password" name="password1" required placeholder="Enter password again" />
+              <Form.Control type="password" name="password1" required placeholder="Enter password again" value={(props.password1) ? props.password1 : null}/>
             </Form.Group>
             <Button type='submit' className="mt-3 mb-3 btn-success">Sign Up</Button>
           </Form>

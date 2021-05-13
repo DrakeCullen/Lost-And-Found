@@ -9,5 +9,4 @@ var UserSchema = new Schema({
     lastName: { type: String, required: false, max: 30 }
 })
 
-// Export model
 module.exports = mongoose.model("User", UserSchema, "users")
